@@ -19,7 +19,12 @@ public class Main {
                 default:
                     if (input.contains("type")){
                         String command = input.substring(5,input.length());
-                        System.out.println(command + " is a shell builtin");
+                        if (command_list.contains(command)){
+                            System.out.println(command + " is a shell builtin");
+                        }
+                        else{
+                            System.out.println(command + ": not found");
+                        }
                     }
                     else if (input.contains("echo")) {
                         System.out.println(input.substring(5,input.length()));
