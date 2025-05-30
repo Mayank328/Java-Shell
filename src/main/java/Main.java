@@ -11,7 +11,7 @@ public class Main {
             Scanner scanner = new Scanner(System.in);
             String input = scanner.nextLine();
             
-            List<String> command_list = new ArrayList<>(Arrays.asList("echo","exit"));
+            List<String> command_list = new ArrayList<>(Arrays.asList("echo","exit","type"));
             
             switch(input){
                 case "exit 0":
