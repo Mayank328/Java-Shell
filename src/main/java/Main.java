@@ -66,8 +66,17 @@ public class Main {
                         if(executable == null){
                             System.out.println(command + ": command not found");
                         }else{
-                            for (String arguments: command_args){
-                                System.out.println(arguments);
+                            List<String> curr_command_list = new ArrayList<>();
+                            curr_command_list.add(executable.getAbsolutePath());
+                            curr_command_list.addAll(Arrays.asList(command_args));
+
+                            ProcessBuilder pb = new ProcessBuilder(curr_command_list);
+                            pb.inheritIO();
+                            try {
+                                Process process = pb.start();
+                                process.waitFor();
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
                     }
