@@ -13,6 +13,10 @@ public class Main {
             String input = scanner.nextLine();
             
             List<String> command_list = new ArrayList<>(Arrays.asList("echo","exit","type"));
+
+            String pathEnv = System.getenv("PATH");
+            String pathSeparator = System.getProperty("path.separator");
+            String fileSeparator = System.getProperty("file.separator");
             
             switch(input){
                 case "exit 0":
@@ -24,9 +28,6 @@ public class Main {
                             System.out.println(commandName + " is a shell builtin");
                         }
                         else{
-                            String pathEnv = System.getenv("PATH");
-                            String pathSeparator = System.getProperty("path.separator");
-                            String fileSeparator = System.getProperty("file.separator");
                             boolean notFound = true;
 
                             String[] paths = pathEnv.split(pathSeparator);
@@ -43,19 +44,32 @@ public class Main {
                             }
                         }
                         
-                        // String command = input.substring(5,input.length());
-                        // if (command_list.contains(command)){
-                        //     System.out.println(command + System.getenv("PATH"));
-                        // }
-                        // else{
-                        //     System.out.println(command + ": not found");
-                        // }
                     }
                     else if (input.contains("echo")) {
                         System.out.println(input.substring(5,input.length()));
                     }
                     else{
-                        System.out.println(input + ": command not found");
+                        String[] command_and_args = input.trim().split("\\s+");
+                        String command = command_and_args[0];
+                        String[] command_args = Arrays.copyOfRange(command_and_args,1,command_and_args.length);
+                    
+                        String[] pathDirs = pathEnv.split(File.pathSeparator);
+                        File executable = null;
+
+                        for (String dir: pathDirs){
+                            File file = new File(dir,command);
+                            if(file.exists() && file.canExecute()){
+                                executable = file;
+                                break;
+                            }
+                        }
+                        if(executable == null){
+                            System.out.println(command + ": command not found");
+                        }else{
+                            for (String arguments: command_args){
+                                System.out.println(arguments);
+                            }
+                        }
                     }
             }
 
