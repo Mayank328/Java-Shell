@@ -24,6 +24,7 @@ public class Main {
                     break outerLoop;
                 case "pwd":
                     System.out.println(System.getProperty("user.dir"));
+                    break;
                 default:
                     if (input.startsWith("type")){
                         String commandName = input.substring(5,input.length());
