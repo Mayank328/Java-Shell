@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws Exception {
-
+        File currentDir = new File(System.getProperty("user.dir"));
         outerLoop: while (true) {
             System.out.print("$ ");
 
@@ -23,7 +23,7 @@ public class Main {
                 case "exit 0":
                     break outerLoop;
                 case "pwd":
-                    System.out.println(System.getProperty("user.dir"));
+                    System.out.println(currentDir);
                     break;
                 default:
                     if (input.startsWith("type")){
@@ -50,6 +50,23 @@ public class Main {
                     }
                     else if (input.startsWith("echo")) {
                         System.out.println(input.substring(5,input.length()));
+                    }
+                    else if (input.startsWith("cd")){
+                        String[] command_and_args = input.trim().split("\\s+");
+                        String command = command_and_args[0];
+                        String[] command_args = Arrays.copyOfRange(command_and_args,1,command_and_args.length);
+                        File newDir = new File(command_args[0]);
+
+                        if(!newDir.isAbsolute()){
+                            newDir = new File(currentDir,command_args[0]);
+                        }
+                        if(newDir.exists() && newDir.isDirectory()){
+                            currentDir = newDir.getCanonicalFile();
+                        }
+                        else{
+                            System.out.println(command+": "+ command_args[0] + ": No such file or directory");
+                        }
+
                     }
                     else{
                         String[] command_and_args = input.trim().split("\\s+");
