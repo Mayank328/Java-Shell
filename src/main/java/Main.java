@@ -17,12 +17,13 @@ public class Main {
             String pathEnv = System.getenv("PATH");
             String pathSeparator = System.getProperty("path.separator");
             String fileSeparator = System.getProperty("file.separator");
+            String[] paths = pathEnv.split(pathSeparator);
             
             switch(input){
                 case "exit 0":
                     break outerLoop;
                 default:
-                    if (input.contains("type")){
+                    if (input.startsWith("type")){
                         String commandName = input.substring(5,input.length());
                         if(command_list.contains(commandName)){
                             System.out.println(commandName + " is a shell builtin");
@@ -30,7 +31,6 @@ public class Main {
                         else{
                             boolean notFound = true;
 
-                            String[] paths = pathEnv.split(pathSeparator);
                             for (String dir : paths){
                                 File file = new File(dir + fileSeparator + commandName);
                             if(file.exists() && file.canExecute()){
@@ -45,7 +45,7 @@ public class Main {
                         }
                         
                     }
-                    else if (input.contains("echo")) {
+                    else if (input.startsWith("echo")) {
                         System.out.println(input.substring(5,input.length()));
                     }
                     else{
@@ -53,13 +53,12 @@ public class Main {
                         String command = command_and_args[0];
                         String[] command_args = Arrays.copyOfRange(command_and_args,1,command_and_args.length);
                     
-                        String[] pathDirs = pathEnv.split(File.pathSeparator);
-                        File executable = null;
+                        String executable = null;
 
-                        for (String dir: pathDirs){
+                        for (String dir: paths){
                             File file = new File(dir,command);
                             if(file.exists() && file.canExecute()){
-                                executable = file;
+                                executable = file.getName();
                                 break;
                             }
                         }
@@ -67,7 +66,7 @@ public class Main {
                             System.out.println(command + ": command not found");
                         }else{
                             List<String> curr_command_list = new ArrayList<>();
-                            curr_command_list.add(executable.getAbsolutePath());
+                            curr_command_list.add(executable);
                             curr_command_list.addAll(Arrays.asList(command_args));
 
                             ProcessBuilder pb = new ProcessBuilder(curr_command_list);
