@@ -12,7 +12,7 @@ public class Main {
             Scanner scanner = new Scanner(System.in);
             String input = scanner.nextLine();
             
-            List<String> command_list = new ArrayList<>(Arrays.asList("echo","exit","type"));
+            List<String> command_list = new ArrayList<>(Arrays.asList("echo","exit","type","pwd"));
 
             String pathEnv = System.getenv("PATH");
             String pathSeparator = System.getProperty("path.separator");
