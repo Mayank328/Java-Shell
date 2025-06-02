@@ -18,6 +18,10 @@ public class Main {
             String pathSeparator = System.getProperty("path.separator");
             String fileSeparator = System.getProperty("file.separator");
             String[] paths = pathEnv.split(pathSeparator);
+
+            String[] command_and_args = input.trim().split("\\s+");
+            String command = command_and_args[0];
+            String[] command_args = Arrays.copyOfRange(command_and_args,1,command_and_args.length);
             
             switch(input){
                 case "exit 0":
@@ -52,11 +56,11 @@ public class Main {
                         System.out.println(input.substring(5,input.length()));
                     }
                     else if (input.startsWith("cd")){
-                        String[] command_and_args = input.trim().split("\\s+");
-                        String command = command_and_args[0];
-                        String[] command_args = Arrays.copyOfRange(command_and_args,1,command_and_args.length);
                         File newDir = new File(command_args[0]);
 
+                        if (command_args[0].equals("~")){
+                            newDir = new File(System.getenv("HOME"));
+                        }
                         if(!newDir.isAbsolute()){
                             newDir = new File(currentDir,command_args[0]);
                         }
@@ -69,10 +73,6 @@ public class Main {
 
                     }
                     else{
-                        String[] command_and_args = input.trim().split("\\s+");
-                        String command = command_and_args[0];
-                        String[] command_args = Arrays.copyOfRange(command_and_args,1,command_and_args.length);
-                    
                         String executable = null;
 
                         for (String dir: paths){
