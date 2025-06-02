@@ -3,35 +3,35 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+
 public class Main {
     public static void main(String[] args) throws Exception {
         File currentDir = new File(System.getProperty("user.dir"));
+        List<String> command_list = new ArrayList<>(Arrays.asList("echo","exit","type","pwd"));
+        String pathEnv = System.getenv("PATH");
+        String pathSeparator = System.getProperty("path.separator");
+        String fileSeparator = System.getProperty("file.separator");
+        String[] paths = pathEnv.split(pathSeparator);
+
         outerLoop: while (true) {
             System.out.print("$ ");
 
             Scanner scanner = new Scanner(System.in);
             String input = scanner.nextLine();
-            
-            List<String> command_list = new ArrayList<>(Arrays.asList("echo","exit","type","pwd"));
-
-            String pathEnv = System.getenv("PATH");
-            String pathSeparator = System.getProperty("path.separator");
-            String fileSeparator = System.getProperty("file.separator");
-            String[] paths = pathEnv.split(pathSeparator);
 
             String[] command_and_args = input.trim().split("\\s+");
             String command = command_and_args[0];
             String[] command_args = Arrays.copyOfRange(command_and_args,1,command_and_args.length);
             
-            switch(input){
+            switch(command){
                 case "exit 0":
                     break outerLoop;
                 case "pwd":
                     System.out.println(currentDir);
                     break;
                 default:
-                    if (input.startsWith("type")){
-                        String commandName = input.substring(5,input.length());
+                    if (command.equals("type")){
+                        String commandName = String.join(" ",command_args);
                         if(command_list.contains(commandName)){
                             System.out.println(commandName + " is a shell builtin");
                         }
@@ -40,7 +40,7 @@ public class Main {
 
                             for (String dir : paths){
                                 File file = new File(dir + fileSeparator + commandName);
-                            if(file.exists() && file.canExecute()){
+                                if(file.exists() && file.canExecute()){
                                     System.out.println(commandName + " is " + file.getAbsoluteFile());
                                     notFound = false;
                                     break;
@@ -52,10 +52,10 @@ public class Main {
                         }
                         
                     }
-                    else if (input.startsWith("echo")) {
-                        System.out.println(input.substring(5,input.length()));
+                    else if (command.equals("echo")) {
+                        System.out.println(String.join(" ",command_args));
                     }
-                    else if (input.startsWith("cd")){
+                    else if (command.equals("cd")){
                         File newDir = new File(command_args[0]);
 
                         if (command_args[0].equals("~")){
