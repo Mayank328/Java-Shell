@@ -53,7 +53,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         
         File currentDir = new File(System.getProperty("user.dir"));
-        List<String> command_list = new ArrayList<>(Arrays.asList("echo","exit 0","type","pwd"));
+        List<String> command_list = new ArrayList<>(Arrays.asList("echo","exit","type","pwd"));
 
         String pathEnv = System.getenv("PATH");
         String pathSeparator = System.getProperty("path.separator");
