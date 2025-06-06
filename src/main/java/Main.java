@@ -6,20 +6,7 @@ import java.util.Scanner;
 
 public class Main {
     public static List<String> parseInput(String input){
-        // List<String> tokens = new ArrayList<>();
-        // Matcher m = Pattern.compile("'([^']*)'|\"([^\"]*)\"|(\\S+)").matcher(input);
         
-        // while(m.find()){
-        //     if(m.group(1)!=null){
-        //         tokens.add(m.group(1));
-        //     }
-        //     else if(m.group(2)!=null){
-        //         tokens.add(m.group(2));
-        //     }else{
-        //         tokens.add(m.group(3));
-        //     }
-        // }
-        // return tokens;
         List<String> tokens = new ArrayList<>();
         StringBuilder current = new StringBuilder();
         boolean inSingle = false;
@@ -27,6 +14,14 @@ public class Main {
 
         for(int i = 0; i<input.length(); i+=1){
             char c = input.charAt(i);
+
+            if(c == '\\'){
+                if(i+1 < input.length()){
+                    i+=1;
+                    current.append(input.charAt(i));
+                }
+                continue;
+            }
 
             if(c == '\'' && !inDouble){
                 inSingle = !inSingle;
@@ -67,9 +62,6 @@ public class Main {
             if(input.equals("exit 0")) break;
             List<String> command_and_args = parseInput(input);
 
-            // String[] command_and_args = input.trim().split("\\s+");
-            // String command = command_and_args[0];
-            // String[] command_args = Arrays.copyOfRange(command_and_args,1,command_and_args.length);
             String command = command_and_args.get(0);
             List<String> command_args_list = command_and_args.subList(1,command_and_args.size());
             String[] command_args = command_args_list.toArray(new String[0]);
