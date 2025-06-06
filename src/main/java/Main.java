@@ -3,23 +3,50 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Main {
     public static List<String> parseInput(String input){
-        List<String> tokens = new ArrayList<>();
-        Matcher m = Pattern.compile("'([^']*)'|\"([^\"]*)\"|(\\S+)").matcher(input);
+        // List<String> tokens = new ArrayList<>();
+        // Matcher m = Pattern.compile("'([^']*)'|\"([^\"]*)\"|(\\S+)").matcher(input);
         
-        while(m.find()){
-            if(m.group(1)!=null){
-                tokens.add(m.group(1));
+        // while(m.find()){
+        //     if(m.group(1)!=null){
+        //         tokens.add(m.group(1));
+        //     }
+        //     else if(m.group(2)!=null){
+        //         tokens.add(m.group(2));
+        //     }else{
+        //         tokens.add(m.group(3));
+        //     }
+        // }
+        // return tokens;
+        List<String> tokens = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        boolean inSingle = false;
+        boolean inDouble = false;
+
+        for(int i = 0; i<input.length(); i+=1){
+            char c = input.charAt(i);
+
+            if(c == '\'' && !inDouble){
+                inSingle = !inSingle;
+                continue;
             }
-            else if(m.group(2)!=null){
-                tokens.add(m.group(2));
-            }else{
-                tokens.add(m.group(3));
+            else if(c == '"' && !inSingle){
+                inDouble = !inDouble;
+                continue;
             }
+            if (Character.isWhitespace(c) && !inSingle && !inDouble){
+                if(current.length() > 0){
+                    tokens.add(current.toString());
+                    current.setLength(0);
+                }
+            } else{
+                current.append(c);
+            }
+        }
+        if(current.length() > 0){
+            tokens.add(current.toString());
         }
         return tokens;
     }
