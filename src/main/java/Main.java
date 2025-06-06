@@ -53,17 +53,18 @@ public class Main {
     public static void main(String[] args) throws Exception {
         
         File currentDir = new File(System.getProperty("user.dir"));
-        List<String> command_list = new ArrayList<>(Arrays.asList("echo","exit","type","pwd"));
+        List<String> command_list = new ArrayList<>(Arrays.asList("echo","exit 0","type","pwd"));
 
         String pathEnv = System.getenv("PATH");
         String pathSeparator = System.getProperty("path.separator");
         String fileSeparator = System.getProperty("file.separator");
         String[] paths = pathEnv.split(pathSeparator);
 
-        outerLoop: while (true) {
+        while (true) {
             System.out.print("$ ");
             Scanner scanner = new Scanner(System.in);
             String input = scanner.nextLine();
+            if(input.equals("exit 0")) break;
             List<String> command_and_args = parseInput(input);
 
             // String[] command_and_args = input.trim().split("\\s+");
@@ -74,8 +75,6 @@ public class Main {
             String[] command_args = command_args_list.toArray(new String[0]);
             
             switch(command){
-                case "exit 0":
-                    break outerLoop;
                 case "pwd":
                     System.out.println(currentDir);
                     break;
