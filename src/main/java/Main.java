@@ -16,7 +16,7 @@ public class Main {
         for (int i = 0; i < input.length(); i++) {
             char currentChar = input.charAt(i);
 
-            if (currentChar == '\\' && i < input.length() - 1) {
+            if (currentChar == '\\' && i < input.length() - 1 && !inQuote) {
                 builder.append(input.charAt(++i));
                 continue;
             }
