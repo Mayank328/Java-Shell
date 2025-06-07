@@ -5,72 +5,43 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    public static List<String> parseInput(String input){
-        
-        List<String> tokens = new ArrayList<>();
-        StringBuilder current = new StringBuilder();
-        boolean inSingle = false;
-        boolean inDouble = false;
 
-        for(int i = 0; i<input.length(); i+=1){
-            char c = input.charAt(i);
+        public static List<String> parseInput(String input) {
 
-            if(c == '\\'){
-                if(i+1 < input.length()){
-                    char next = input.charAt(++i);
-                    current.append(next);
+        List<String> outputs = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
+        boolean inQuote = false;
+        char quoteChar = '\0';
 
-                    // switch (next) {
-                    //     case 'n': current.append('\n'); break;
-                    //     case 't': current.append('\t'); break;
-                    //     case 'r': current.append('\r'); break;
-                    //     case 'b': current.append('\b'); break;
-                    //     case 'f': current.append('\f'); break;
-                    //     case '\\': current.append('\\'); break;
-                    //     case '\'': current.append('\''); break;
-                    //     case '\"': current.append('\"'); break;
+        for (int i = 0; i < input.length(); i++) {
+            char currentChar = input.charAt(i);
 
-                    //     case '0', '1', '2', '3','4', '5', '6', '7':
-                    //         StringBuilder oct = new StringBuilder();
-                    //         oct.append(next);
-                    //         for(int j = 0; j<2 && i+1 <input.length();j+=1){
-                    //             char oc = input.charAt(i+1);
-                    //             if( oc>= '0' && oc <='7'){
-                    //                 oct.append(oc);
-                    //                 i+=1;
-                    //             }else break;
-                    //         }
-                    //         current.append((char) Integer.parseInt(oct.toString(),8));
-                    //         break;
-                    //     default:
-                    //         current.append(next); 
-                    // }
-                    
+            if (currentChar == '\\' && i < input.length() - 1) {
+                builder.append(input.charAt(++i));
+                continue;
+            }
+
+            if ((currentChar == '"' || currentChar == '\'') && !inQuote) {
+                inQuote = true;
+                quoteChar = currentChar;
+            } else if (currentChar == quoteChar && inQuote) {
+                inQuote = false;
+                quoteChar = '\0';
+            } else if (!inQuote && Character.isWhitespace(currentChar)) {
+                if (builder.length() > 0) {
+                outputs.add(builder.toString());
+                builder.setLength(0);
                 }
-                continue;
-            }
-
-            if(c == '\'' && !inDouble){
-                inSingle = !inSingle;
-                continue;
-            }
-            else if(c == '"' && !inSingle){
-                inDouble = !inDouble;
-                continue;
-            }
-            if (Character.isWhitespace(c) && !inSingle && !inDouble){
-                if(current.length() > 0){
-                    tokens.add(current.toString());
-                    current.setLength(0);
-                }
-            } else{
-                current.append(c);
+            } else {
+                builder.append(currentChar);
             }
         }
-        if(current.length() > 0){
-            tokens.add(current.toString());
+
+        if (builder.length() > 0) {
+            outputs.add(builder.toString());
         }
-        return tokens;
+        System.out.println(builder);
+        return outputs;
     }
     public static void main(String[] args) throws Exception {
         
@@ -90,6 +61,7 @@ public class Main {
             if(input.equals("exit 0")) break;
 
             List<String> command_and_args = parseInput(input);
+            System.out.println(command_and_args);
 
             String command = command_and_args.get(0);
             List<String> command_args_list = command_and_args.subList(1,command_and_args.size());
