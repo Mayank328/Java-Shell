@@ -40,7 +40,7 @@ public class Main {
         if (builder.length() > 0) {
             outputs.add(builder.toString());
         }
-        System.out.println(builder);
+        // System.out.println(builder);
         return outputs;
     }
     public static void main(String[] args) throws Exception {
@@ -61,7 +61,7 @@ public class Main {
             if(input.equals("exit 0")) break;
 
             List<String> command_and_args = parseInput(input);
-            System.out.println(command_and_args);
+            // System.out.println(command_and_args);
 
             String command = command_and_args.get(0);
             List<String> command_args_list = command_and_args.subList(1,command_and_args.size());
