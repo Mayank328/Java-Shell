@@ -8,40 +8,79 @@ public class Main {
 
         public static List<String> parseInput(String input) {
 
-        List<String> outputs = new ArrayList<>();
-        StringBuilder builder = new StringBuilder();
-        boolean inQuote = false;
-        char quoteChar = '\0';
+        // add space after input to added the last arg to list
+        input = String.format("%s ", input);
 
-        for (int i = 0; i < input.length(); i++) {
-            char currentChar = input.charAt(i);
+        ArrayList<String> args = new ArrayList<>();
 
-            if (currentChar == '\\' && i < input.length() - 1 && !inQuote) {
-                builder.append(input.charAt(++i));
-                continue;
-            }
+        StringBuilder sb = new StringBuilder("");
+        int i = 0;
 
-            if ((currentChar == '"' || currentChar == '\'') && !inQuote) {
-                inQuote = true;
-                quoteChar = currentChar;
-            } else if (currentChar == quoteChar && inQuote) {
-                inQuote = false;
-                quoteChar = '\0';
-            } else if (!inQuote && Character.isWhitespace(currentChar)) {
-                if (builder.length() > 0) {
-                outputs.add(builder.toString());
-                builder.setLength(0);
+        while (i < input.length()) {
+            char ch = input.charAt(i);
+            char prev = i > 0 ? input.charAt(i - 1) : ' ';
+
+            if (prev != '\\' && ch == ' ') {
+                args.add(sb.toString());
+                sb = new StringBuilder("");
+
+                // ignore extra white spaces between args
+                while (ch == ' ') {
+                i++;
+                if (i < input.length())
+                    ch = input.charAt(i);
+                else
+                    break;
+                }
+            } else if (ch == '\\') {
+                i++;
+            } else if (prev != '\\' && ch == '\'') {
+                // add everything untill another next single quote appears
+                i++;
+
+                while (i < input.length() - 1) {
+                ch = input.charAt(i);
+
+                if (ch == '\'') {
+                    i++;
+                    break;
+                }
+                sb.append(ch);
+                i++;
+                }
+            } else if (prev != '\\' && ch == '\"') {
+                i++;
+                boolean isEscaped = false;
+                while (i < input.length() - 1) {
+                ch = input.charAt(i);
+
+                if (!isEscaped && ch == '\"') {
+                    i++;
+                    break;
+                }
+
+                if (!isEscaped && ch == '\\') {
+                    isEscaped = true;
+                    i++;
+                    continue;
+                }
+
+                if (isEscaped && (ch != '\\' && ch != '"')) {
+                    sb.append("\\");
+                }
+
+                isEscaped = false;
+
+                sb.append(ch);
+                i++;
                 }
             } else {
-                builder.append(currentChar);
+                sb.append(ch);
+                i++;
             }
         }
 
-        if (builder.length() > 0) {
-            outputs.add(builder.toString());
-        }
-        // System.out.println(builder);
-        return outputs;
+        return args;
     }
     public static void main(String[] args) throws Exception {
         
