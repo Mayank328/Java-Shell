@@ -196,27 +196,21 @@ public class Main {
             String[] command_args = command_args_list.toArray(new String[0]);
             
             switch(command){
-                case "pwd":
-                    DirectoryClass.current_directory();
-                    break;
-                case "exit":
+                case "pwd" -> DirectoryClass.current_directory();
+                case "exit" -> {
                     break outerLoop;
-                case "type":
+                }
+                case "type" -> {
                     if(TypeClass.builtin_check(command_args)){
-                            System.out.println(TypeClass.argName + " is a shell builtin");
+                        System.out.println(TypeClass.argName + " is a shell builtin");
                     }
                     else{
                         DirectoryClass.check_directory();
                     }
-                    break;
-                case "echo":
-                    System.out.println(String.join(" ",command_args));
-                    break;
-                case "cd":
-                    DirectoryClass.change_directory(command_args,command);
-                    break;
-                default:
-                    ExecutableClass.execute(command_args,command);
+                }
+                case "echo" -> System.out.println(String.join(" ",command_args));
+                case "cd" -> DirectoryClass.change_directory(command_args,command);
+                default -> ExecutableClass.execute(command_args,command);
             }
 
         }
