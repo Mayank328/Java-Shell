@@ -9,13 +9,43 @@ public class Main {
 
     public class InputClass{
         static String input;
+
+        static String command;
+        static List<String> command_args_list;
+        static String[] command_args;
+
         static List<String> command_and_args;
+        static String outputFile = null;
         
         public static void input(){
             System.out.print("$ ");
             Scanner scanner = new Scanner(System.in);
             input = scanner.nextLine();
-            command_and_args = ParseClass.parseInput(input);
+
+            String[] parts = new String[] {input};
+            String commandPart = input;
+
+            if(input.contains("1>")){
+                parts = input.split("1>",2);
+                commandPart = parts[0].trim();
+            }else if(input.contains(">")){
+                parts = input.split(">",2);
+                commandPart = parts[0].trim();
+            }
+
+            command_and_args = ParseClass.parseInput(commandPart);
+            if(parts.length > 1){
+                outputFile = parts[1].trim();
+            }
+            // for(int i = 0;i<parts.length;i+=1){
+            //     System.out.println(parts[i]);
+            // }
+            // System.out.println(commandPart);
+            // System.out.println(command_and_args);
+            // System.out.println(outputFile);
+            command = command_and_args.get(0);
+            command_args_list = command_and_args.subList(1,command_and_args.size());
+            command_args = command_args_list.toArray(new String[0]);
         }
     }
 
@@ -163,7 +193,7 @@ public class Main {
             if(file.exists() && file.canExecute()){
                 executable = file.getName();
                 break;
-            }
+                }
             }
             
             if(executable == null){
@@ -174,13 +204,20 @@ public class Main {
                 curr_command_list.addAll(Arrays.asList(command_args));
 
                 ProcessBuilder pb = new ProcessBuilder(curr_command_list);
-                pb.inheritIO();
+                
+                if(InputClass.outputFile != null){
+                    pb.redirectOutput(new File(InputClass.outputFile).getAbsoluteFile());
+                    pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+                    InputClass.outputFile = null;
+                }else{
+                    pb.inheritIO();
+                }
                 try {
                     Process process = pb.start();
                     process.waitFor();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    }
+                }
             }
         }
     }
@@ -191,26 +228,27 @@ public class Main {
         outerLoop: while (true) {
             InputClass.input();
 
-            String command = InputClass.command_and_args.get(0);
-            List<String> command_args_list = InputClass.command_and_args.subList(1,InputClass.command_and_args.size());
-            String[] command_args = command_args_list.toArray(new String[0]);
-            
-            switch(command){
+            if(InputClass.outputFile!= null){
+                ExecutableClass.execute(InputClass.command_args,InputClass.command);
+                continue;
+            }
+
+            switch(InputClass.command){
                 case "pwd" -> DirectoryClass.current_directory();
                 case "exit" -> {
                     break outerLoop;
                 }
                 case "type" -> {
-                    if(TypeClass.builtin_check(command_args)){
+                    if(TypeClass.builtin_check(InputClass.command_args)){
                         System.out.println(TypeClass.argName + " is a shell builtin");
                     }
                     else{
                         DirectoryClass.check_directory();
                     }
                 }
-                case "echo" -> System.out.println(String.join(" ",command_args));
-                case "cd" -> DirectoryClass.change_directory(command_args,command);
-                default -> ExecutableClass.execute(command_args,command);
+                case "echo" -> System.out.println(String.join(" ",InputClass.command_args));
+                case "cd" -> DirectoryClass.change_directory(InputClass.command_args,InputClass.command);
+                default -> ExecutableClass.execute(InputClass.command_args,InputClass.command);
             }
 
         }
