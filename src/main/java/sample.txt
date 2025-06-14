@@ -1,1 +1,1 @@
-hello
+ls: cannot access 'nonexistant': No such file or directory

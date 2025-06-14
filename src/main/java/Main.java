@@ -16,6 +16,7 @@ public class Main {
 
         static List<String> command_and_args;
         static String outputFile = null;
+        static String errorFile = null;
         
         public static void input(){
             System.out.print("$ ");
@@ -26,17 +27,32 @@ public class Main {
             String commandPart = input;
 
             if(input.contains("1>")){
+
                 parts = input.split("1>",2);
+
                 commandPart = parts[0].trim();
+                outputFile = parts[1].trim();
+
+            }else if(input.contains("2>")){
+
+                parts = input.split("2>",2);
+                
+                commandPart = parts[0].trim();
+                errorFile = parts[1].trim();
+
             }else if(input.contains(">")){
+
                 parts = input.split(">",2);
+
                 commandPart = parts[0].trim();
+                outputFile = parts[1].trim();
+
             }
 
             command_and_args = ParseClass.parseInput(commandPart);
-            if(parts.length > 1){
-                outputFile = parts[1].trim();
-            }
+            // if(parts.length > 1){
+            //     outputFile = parts[1].trim();
+            // }
             // for(int i = 0;i<parts.length;i+=1){
             //     System.out.println(parts[i]);
             // }
@@ -199,6 +215,7 @@ public class Main {
             if(executable == null){
                 System.out.println(command + ": command not found");
             }else{
+
                 List<String> curr_command_list = new ArrayList<>();
                 curr_command_list.add(executable);
                 curr_command_list.addAll(Arrays.asList(command_args));
@@ -206,17 +223,29 @@ public class Main {
                 ProcessBuilder pb = new ProcessBuilder(curr_command_list);
                 
                 if(InputClass.outputFile != null){
+
                     pb.redirectOutput(new File(InputClass.outputFile).getAbsoluteFile());
                     pb.redirectError(ProcessBuilder.Redirect.INHERIT);
                     InputClass.outputFile = null;
+
+                }else if (InputClass.errorFile != null) {
+
+                    pb.inheritIO();
+                    pb.redirectError(new File(InputClass.errorFile).getAbsoluteFile());
+                    InputClass.errorFile = null;
+
                 }else{
                     pb.inheritIO();
                 }
                 try {
+
                     Process process = pb.start();
                     process.waitFor();
+
                 } catch (Exception e) {
+
                     e.printStackTrace();
+
                 }
             }
         }
@@ -228,7 +257,7 @@ public class Main {
         outerLoop: while (true) {
             InputClass.input();
 
-            if(InputClass.outputFile!= null){
+            if(InputClass.outputFile!= null || InputClass.errorFile!=null){
                 ExecutableClass.execute(InputClass.command_args,InputClass.command);
                 continue;
             }
