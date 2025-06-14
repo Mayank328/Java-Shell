@@ -1,1 +1,5 @@
-ls: cannot access 'nonexistant': No such file or directory
+hello
+hello
+this is the append text
+cat: hello: No such file or directory
+appended text

@@ -14,6 +14,13 @@ public class Main {
         static List<String> command_args_list;
         static String[] command_args;
 
+        static boolean stdout_redirect = false;
+        static boolean stdout_append = false;
+
+        static boolean stderr_redirect = false;
+        static boolean stderr_append = false;
+
+
         static List<String> command_and_args;
         static String outputFile = null;
         static String errorFile = null;
@@ -26,12 +33,33 @@ public class Main {
             String[] parts = new String[] {input};
             String commandPart = input;
 
-            if(input.contains("1>")){
+            if(input.contains("1>>")){
+
+                parts = input.split("1>>",2);
+
+                commandPart = parts[0].trim();
+                outputFile = parts[1].trim();
+
+                stdout_append = !stdout_append;
+
+
+            }else if (input.contains("1>")) {
 
                 parts = input.split("1>",2);
 
                 commandPart = parts[0].trim();
                 outputFile = parts[1].trim();
+
+                stdout_redirect = !stdout_redirect;
+
+            }else if(input.contains("2>>")){
+
+                parts = input.split("2>>",2);
+
+                commandPart = parts[0].trim();
+                errorFile = parts[1].trim();
+
+                stderr_append = !stderr_append;
 
             }else if(input.contains("2>")){
 
@@ -40,6 +68,17 @@ public class Main {
                 commandPart = parts[0].trim();
                 errorFile = parts[1].trim();
 
+                stderr_redirect = !stderr_redirect;
+
+            }else if(input.contains(">>")){
+
+                parts = input.split(">>",2);
+
+                commandPart = parts[0].trim();
+                outputFile = parts[1].trim();
+
+                stdout_append = !stdout_append;                
+
             }else if(input.contains(">")){
 
                 parts = input.split(">",2);
@@ -47,21 +86,15 @@ public class Main {
                 commandPart = parts[0].trim();
                 outputFile = parts[1].trim();
 
+                stdout_redirect = !stdout_redirect;
             }
 
             command_and_args = ParseClass.parseInput(commandPart);
-            // if(parts.length > 1){
-            //     outputFile = parts[1].trim();
-            // }
-            // for(int i = 0;i<parts.length;i+=1){
-            //     System.out.println(parts[i]);
-            // }
-            // System.out.println(commandPart);
-            // System.out.println(command_and_args);
-            // System.out.println(outputFile);
+
             command = command_and_args.get(0);
             command_args_list = command_and_args.subList(1,command_and_args.size());
             command_args = command_args_list.toArray(new String[0]);
+
         }
     }
 
@@ -224,14 +257,41 @@ public class Main {
                 
                 if(InputClass.outputFile != null){
 
-                    pb.redirectOutput(new File(InputClass.outputFile).getAbsoluteFile());
-                    pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+                    if(InputClass.stdout_redirect){
+
+                        pb.redirectOutput(new File(InputClass.outputFile).getAbsoluteFile());
+                        pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+                        InputClass.stdout_redirect = !InputClass.stdout_redirect;
+
+                    }
+
+                    if(InputClass.stdout_append){
+
+                        pb.redirectOutput(ProcessBuilder.Redirect.appendTo(new File(InputClass.outputFile).getAbsoluteFile()));
+                        pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+                        InputClass.stdout_append = !InputClass.stdout_append;
+
+                    }
+
                     InputClass.outputFile = null;
 
                 }else if (InputClass.errorFile != null) {
 
-                    pb.inheritIO();
-                    pb.redirectError(new File(InputClass.errorFile).getAbsoluteFile());
+                    if(InputClass.stderr_redirect){
+
+                        pb.inheritIO();
+                        pb.redirectError(new File(InputClass.errorFile).getAbsoluteFile());
+                        InputClass.stderr_redirect = !InputClass.stderr_redirect;
+
+                    }
+
+                    if(InputClass.stderr_append){
+
+                        pb.inheritIO();
+                        pb.redirectError(ProcessBuilder.Redirect.appendTo(new File(InputClass.errorFile).getAbsoluteFile()));
+                        InputClass.stderr_append = !InputClass.stderr_append;
+                    }
+
                     InputClass.errorFile = null;
 
                 }else{
