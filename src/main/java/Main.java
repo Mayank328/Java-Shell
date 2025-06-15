@@ -19,9 +19,18 @@ class InputClass{
 
         static {
             try {
-                System.setProperty("org.jline.utils.Log.level", "OFF");
-                
-                Terminal terminal = TerminalBuilder.builder().dumb(true).system(false).streams(System.in, System.out).build();
+                // Terminal terminal = TerminalBuilder.builder().system(true).build();
+
+               boolean isCI = System.getenv("CI") != null || System.getenv("CODECRAFTERS_SUBMISSION") != null;
+
+                TerminalBuilder builder = TerminalBuilder.builder();
+
+                if (isCI) {
+                    builder.dumb(true).system(false).streams(System.in, System.out);
+                }
+
+                Terminal terminal = builder.build();
+
                 Completer completer = new StringsCompleter(TypeClass.command_list);
 
                 reader = LineReaderBuilder.builder().terminal(terminal).completer(completer).parser(new DefaultParser()).build();
