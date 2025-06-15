@@ -19,7 +19,7 @@ class InputClass{
 
         static {
             try {
-                System.setProperty("org.jline.utils.Log.level", "OFF");
+                // System.setProperty("org.jline.utils.Log.level", "OFF");
 
                 boolean isCI = System.getenv("CI") != null || System.getenv("CODECRAFTERS_SUBMISSION") != null;
 
