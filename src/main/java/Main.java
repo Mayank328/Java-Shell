@@ -19,7 +19,9 @@ class InputClass{
 
         static {
             try {
-                Terminal terminal = TerminalBuilder.builder().system(true).build();
+                System.setProperty("org.jline.utils.Log.level", "OFF");
+                
+                Terminal terminal = TerminalBuilder.builder().dumb(true).system(false).streams(System.in, System.out).build();
                 Completer completer = new StringsCompleter(TypeClass.command_list);
 
                 reader = LineReaderBuilder.builder().terminal(terminal).completer(completer).parser(new DefaultParser()).build();
