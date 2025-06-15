@@ -19,26 +19,36 @@ class InputClass{
 
         static {
             try {
-                // Terminal terminal = TerminalBuilder.builder().system(true).build();
-                System.setProperty("org.jline.utils.Log.level", "OFF"); 
+                System.setProperty("org.jline.utils.Log.level", "OFF");
+
                 boolean isCI = System.getenv("CI") != null || System.getenv("CODECRAFTERS_SUBMISSION") != null;
 
-                TerminalBuilder builder = TerminalBuilder.builder();
-
+                Terminal terminal;
                 if (isCI) {
-                    builder.dumb(true).system(false).streams(System.in, System.out);
+                    terminal = TerminalBuilder.builder()
+                        .dumb(true)
+                        .system(false)
+                        .streams(System.in, System.out)
+                        .build();
+                } else {
+                    terminal = TerminalBuilder.builder()
+                        .system(true)
+                        .build();
                 }
-
-                Terminal terminal = builder.build();
 
                 Completer completer = new StringsCompleter(TypeClass.command_list);
 
-                reader = LineReaderBuilder.builder().terminal(terminal).completer(completer).parser(new DefaultParser()).build();
+                reader = LineReaderBuilder.builder()
+                    .terminal(terminal)
+                    .completer(completer)
+                    .parser(new DefaultParser())
+                    .build();
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
         static String input;
         static LineReader reader;
 
