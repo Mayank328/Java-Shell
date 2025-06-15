@@ -20,8 +20,8 @@ class InputClass{
         static {
             try {
                 // Terminal terminal = TerminalBuilder.builder().system(true).build();
-
-               boolean isCI = System.getenv("CI") != null || System.getenv("CODECRAFTERS_SUBMISSION") != null;
+                System.setProperty("org.jline.utils.Log.level", "OFF"); 
+                boolean isCI = System.getenv("CI") != null || System.getenv("CODECRAFTERS_SUBMISSION") != null;
 
                 TerminalBuilder builder = TerminalBuilder.builder();
 
