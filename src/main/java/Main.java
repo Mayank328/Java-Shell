@@ -13,13 +13,15 @@ import org.jline.reader.Completer;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+import java.util.logging.Logger;
+import java.util.logging.Level; 
 
 
 class InputClass{
 
         static {
             try {
-                System.setProperty("org.jline.utils.Log.level", "OFF");
+                Logger.getLogger("org.jline").setLevel(Level.SEVERE);
 
                 boolean isCI = System.getenv("CI") != null || System.getenv("CODECRAFTERS_SUBMISSION") != null;
 
