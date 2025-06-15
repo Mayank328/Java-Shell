@@ -15,7 +15,7 @@ set -e # Exit early if any commands fail
 (
   # cd "$(dirname "$0")" # Ensure compile steps are run within the repository directory
   # mvn -B package -Ddir=/tmp/codecrafters-build-shell-java
-  # cd /home/mayank-lohani/Desktop/Notes_cs/Java_Shell/codecrafters-shell-java/src/main/java/
+  cd /home/mayank-lohani/Desktop/Notes_cs/Java_Shell/codecrafters-shell-java/src/main/java/
   # javac Main.java
   # java Main
   JARS="jline-reader-3.23.0.jar:jline-terminal-3.23.0.jar:jline-terminal-jansi-3.23.0.jar"
