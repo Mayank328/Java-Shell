@@ -1,14 +1,35 @@
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-public class Main {
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.impl.completer.StringsCompleter;
+import org.jline.reader.Completer;
+import org.jline.reader.impl.DefaultParser;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 
-    public class InputClass{
+
+class InputClass{
+
+        static {
+            try {
+                Terminal terminal = TerminalBuilder.builder().system(true).build();
+                Completer completer = new StringsCompleter(TypeClass.command_list);
+
+                reader = LineReaderBuilder.builder().terminal(terminal).completer(completer).parser(new DefaultParser()).build();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         static String input;
+        static LineReader reader;
 
         static String command;
         static List<String> command_args_list;
@@ -26,9 +47,11 @@ public class Main {
         static String errorFile = null;
         
         public static void input(){
-            System.out.print("$ ");
-            Scanner scanner = new Scanner(System.in);
-            input = scanner.nextLine();
+            // System.out.print("$ ");
+            // Scanner scanner = new Scanner(System.in);
+            // input = scanner.nextLine();
+
+            input = reader.readLine("$ ");
 
             String[] parts = new String[] {input};
             String commandPart = input;
@@ -96,9 +119,10 @@ public class Main {
             command_args = command_args_list.toArray(new String[0]);
 
         }
-    }
+}
 
-    public class ParseClass{
+class ParseClass{
+
         public static List<String> parseInput(String input) {
 
         // add space after input to added the last arg to list
@@ -175,9 +199,10 @@ public class Main {
 
             return args;
         }
-    }
+}
 
-    public class DirectoryClass{
+class DirectoryClass{
+
         static File currentDir = new File(System.getProperty("user.dir"));
         static String pathEnv = System.getenv("PATH");
         static String pathSeparator = System.getProperty("path.separator");
@@ -220,9 +245,9 @@ public class Main {
                 System.out.println(command+": "+ command_args[0] + ": No such file or directory");
             }
         }
-    }
+}
 
-    public class TypeClass{
+class TypeClass{
         static List<String> command_list = new ArrayList<>(Arrays.asList("echo","exit","type","pwd"));
         static String argName;
 
@@ -230,9 +255,9 @@ public class Main {
             argName = String.join(" ",command_args);
             return command_list.contains(argName);
         }
-    }
+}
 
-    public class ExecutableClass{
+class ExecutableClass{
         
         public static void execute(String[] command_args,String command){
             String executable = null;
@@ -309,8 +334,8 @@ public class Main {
                 }
             }
         }
-    }
-
+}
+public class Main {
 
     public static void main(String[] args) throws Exception {
 
