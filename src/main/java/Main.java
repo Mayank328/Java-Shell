@@ -103,15 +103,13 @@ class InputClass{
 
             // Completer completer = new AggregateCompleter(builtInCompleter); // Combine more if needed
 
-            Completer completer = new Completer() {
-                @Override
-                public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
-                    String word = line.word().trim();
-                    if ("echo".startsWith(word)) {
-                        candidates.add(new Candidate("echo "));
-                    } else if ("exit".startsWith(word)) {
-                        candidates.add(new Candidate("exit "));
-                    }
+            Completer completer = (reader, line, candidates) -> {
+                String word = line.word().trim();
+                if ("echo".startsWith(word)) {
+                    candidates.add(new Candidate("echo", "echo", null, null, null, null, true));
+                }
+                if ("exit".startsWith(word)) {
+                    candidates.add(new Candidate("exit", "exit", null, null, null, null, true));
                 }
             };
 
