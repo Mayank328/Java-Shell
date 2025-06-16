@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 import org.jline.reader.*;
 // import org.jline.reader.LineReaderBuilder;
-// import org.jline.reader.impl.completer.StringsCompleter;
+import org.jline.reader.impl.completer.StringsCompleter;
 // import org.jline.reader.Completer;
 import org.jline.reader.impl.completer.AggregateCompleter;
 import org.jline.reader.impl.completer.EnumCompleter;
@@ -96,7 +96,11 @@ class InputClass{
                     .system(true) // important: works in Codecrafters
                     .build();
 
-            Completer builtInCompleter = new EnumCompleter(BuiltIn.class); // Enum-based
+            // Completer builtInCompleter = new EnumCompleter(BuiltIn.class); // Enum-based
+            Completer builtInCompleter = new StringsCompleter(
+                Arrays.stream(BuiltIn.values()).map(Enum::name).toArray(String[]::new)
+            );
+
             Completer completer = new AggregateCompleter(builtInCompleter); // Combine more if needed
 
             reader = LineReaderBuilder.builder()
