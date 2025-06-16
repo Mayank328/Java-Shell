@@ -38,7 +38,16 @@ class InputClass{
                         .build();
                 }
 
-                Completer completer = new StringsCompleter(TypeClass.command_list);
+                Completer completer = (reader, line, candidates) -> {
+                    String buffer = line.line().trim();
+                    for (String cmd : TypeClass.command_list) {
+                        if(cmd.startsWith(buffer)){
+                            reader.getBuffer().clear();
+                            reader.getBuffer().write(cmd + " ");
+                            break;
+                        }
+                    }
+                };
 
                 reader = LineReaderBuilder.builder()
                     .terminal(terminal)
@@ -142,6 +151,7 @@ class InputClass{
             command_args = command_args_list.toArray(new String[0]);
 
         }
+
 }
 
 class ParseClass{
@@ -222,6 +232,7 @@ class ParseClass{
 
             return args;
         }
+
 }
 
 class DirectoryClass{
@@ -271,7 +282,7 @@ class DirectoryClass{
 }
 
 class TypeClass{
-        static List<String> command_list = new ArrayList<>(Arrays.asList("echo","exit","type","pwd"));
+        static List<String> command_list = new ArrayList<>(Arrays.asList("echo","exit","type","pwd","cd"));
         static String argName;
 
         public static boolean builtin_check(String[] command_args){

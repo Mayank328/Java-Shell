@@ -4,3 +4,47 @@ this is the append text
 cat: hello: No such file or directory
 appended text
 cat: hello: No such file or directory
+#!/bin/zsh
+
+
+release_file=/etc/os-release
+logfile=/var/log/updater.log
+errorlog=/var/log/updater_error.log
+
+
+check_exit_status() {
+	if [ $? -ne 0 ]
+	then
+		echo "An error occurred, please check $errorlog file."
+		exit 1
+	fi
+}
+
+if grep -q "Arch" $release_file
+then
+	sudo pacman -Syu 1>>$logfile 2>>$errorlog
+	check_exit_status
+fi
+
+if grep -q "Ubuntu" $release_file || grep -q "Debian" $release_file
+then
+	sudo apt update 1>>$logfile 2>>$errorlog
+	check_exit_status
+
+	sudo apt dist-upgrade -y 1>>$logfile 2>>$errorlog
+	check_exit_status
+	echo "Do you want see the update log (y/n)."
+
+	read -t 2 confirm
+
+	if [[ "$confirm" == "y" ]]
+	then
+        	echo "This block executed"
+        	sudo cat /var/log/updater.log
+	else
+		echo "System updated at $(date)" >> $logfile
+	fi
+
+
+fi
+
