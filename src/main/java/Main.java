@@ -8,75 +8,107 @@ import java.util.Scanner;
 
 import org.jline.reader.*;
 // import org.jline.reader.LineReaderBuilder;
-import org.jline.reader.impl.completer.StringsCompleter;
+// import org.jline.reader.impl.completer.StringsCompleter;
 // import org.jline.reader.Completer;
+import org.jline.reader.impl.completer.AggregateCompleter;
+import org.jline.reader.impl.completer.EnumCompleter;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import java.util.logging.Logger;
 import java.util.logging.Level; 
 
+enum BuiltIn{
+    echo, exit, cd, pwd, type
+}
 
 class InputClass{
         
-        static boolean isCI;
+        // static boolean isCI;
+
+        // static {
+        //     try {
+        //         Logger.getLogger("org.jline").setLevel(Level.SEVERE);
+
+        //         isCI = System.getenv("CI") != null || System.getenv("CODECRAFTERS_SUBMISSION") != null;
+
+        //         Terminal terminal;
+        //         if (isCI) {
+        //             terminal = TerminalBuilder.builder()
+        //                 .dumb(true)
+        //                 .system(false)
+        //                 .streams(System.in, System.out)
+        //                 .build();
+        //         } else {
+        //             terminal = TerminalBuilder.builder()
+        //                 .system(true)
+        //                 .build();
+        //         }
+
+        //         Completer completer = (reader, line, candidates) -> {
+        //             String buffer = line.line().trim();
+        //             for (String cmd : TypeClass.command_list) {
+        //                 if(cmd.startsWith(buffer)){
+        //                     reader.getBuffer().clear();
+        //                     reader.getBuffer().write(cmd + " ");
+        //                     break;
+        //                 }
+        //             }
+        //         };
+
+        //         // reader = LineReaderBuilder.builder()
+        //         //     .terminal(terminal)
+        //         //     .completer(completer)
+        //         //     .parser(new DefaultParser())
+        //         //     .build();
+
+        //         if (isCI) {
+        //             // Codecrafters: No-op completer, dumb terminal
+        //             reader = LineReaderBuilder.builder()
+        //                     .terminal(terminal)
+        //                     .completer((r, l, c) -> {}) // no JLine tab behavior
+        //                     .parser(new DefaultParser())
+        //                     .build();
+        //         } else {
+        //             // Local: Full JLine completion
+        //             reader = LineReaderBuilder.builder()
+        //                     .terminal(terminal)
+        //                     .completer(new StringsCompleter(TypeClass.command_list)) // Local tab works!
+        //                     .parser(new DefaultParser())
+        //                     .build();
+        //         }
+
+        //     } catch (Exception e) {
+        //         e.printStackTrace();
+        //     }
+        // }
 
         static {
-            try {
-                Logger.getLogger("org.jline").setLevel(Level.SEVERE);
+        try {
+            // Suppress JLine log messages
+            Logger.getLogger("org.jline").setLevel(Level.SEVERE);
 
-                isCI = System.getenv("CI") != null || System.getenv("CODECRAFTERS_SUBMISSION") != null;
+            // Built-in commands
+            DefaultParser parser = new DefaultParser();
+            parser.setEscapeChars(new char[0]);
 
-                Terminal terminal;
-                if (isCI) {
-                    terminal = TerminalBuilder.builder()
-                        .dumb(true)
-                        .system(false)
-                        .streams(System.in, System.out)
-                        .build();
-                } else {
-                    terminal = TerminalBuilder.builder()
-                        .system(true)
-                        .build();
-                }
+            Terminal terminal = TerminalBuilder.builder()
+                    .system(true) // important: works in Codecrafters
+                    .build();
 
-                Completer completer = (reader, line, candidates) -> {
-                    String buffer = line.line().trim();
-                    for (String cmd : TypeClass.command_list) {
-                        if(cmd.startsWith(buffer)){
-                            reader.getBuffer().clear();
-                            reader.getBuffer().write(cmd + " ");
-                            break;
-                        }
-                    }
-                };
+            Completer builtInCompleter = new EnumCompleter(BuiltIn.class); // Enum-based
+            Completer completer = new AggregateCompleter(builtInCompleter); // Combine more if needed
 
-                // reader = LineReaderBuilder.builder()
-                //     .terminal(terminal)
-                //     .completer(completer)
-                //     .parser(new DefaultParser())
-                //     .build();
+            reader = LineReaderBuilder.builder()
+                    .terminal(terminal)
+                    .parser(parser)
+                    .completer(completer)
+                    .build();
 
-                if (isCI) {
-                    // Codecrafters: No-op completer, dumb terminal
-                    reader = LineReaderBuilder.builder()
-                            .terminal(terminal)
-                            .completer((r, l, c) -> {}) // no JLine tab behavior
-                            .parser(new DefaultParser())
-                            .build();
-                } else {
-                    // Local: Full JLine completion
-                    reader = LineReaderBuilder.builder()
-                            .terminal(terminal)
-                            .completer(new StringsCompleter(TypeClass.command_list)) // Local tab works!
-                            .parser(new DefaultParser())
-                            .build();
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
 
         static String input;
         static LineReader reader;
@@ -103,15 +135,15 @@ class InputClass{
 
             input = reader.readLine("$ ");
 
-            if(isCI){
-                for (String cmd : TypeClass.command_list) {
-                    if (cmd.startsWith(input.trim()) && !cmd.equals(input.trim())) {
-                        input = cmd + " ";
-                        System.out.print("\r$ " + input); // Overwrite the line visibly
-                        break;
-                    }
-                }
-            }
+            // if(isCI){
+            //     for (String cmd : TypeClass.command_list) {
+            //         if (cmd.startsWith(input.trim()) && !cmd.equals(input.trim())) {
+            //             input = cmd + " ";
+            //             System.out.print("\r$ " + input); // Overwrite the line visibly
+            //             break;
+            //         }
+            //     }
+            // }
 
             String[] parts = new String[] {input};
             String commandPart = input;
