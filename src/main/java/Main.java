@@ -22,6 +22,7 @@ import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.ParsedLine;
 import org.jline.reader.impl.completer.StringsCompleter;
+import org.jline.reader.impl.completer.ArgumentCompleter;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import java.util.logging.Logger;
@@ -88,14 +89,17 @@ class InputClass{
         );
 
         public static void initializeReader() throws IOException {
-            
+
             Logger.getLogger("org.jline").setLevel(Level.SEVERE);
 
             Terminal terminal = TerminalBuilder.builder()
                     .system(true)
                     .build();
 
-            Completer completer = new StringsCompleter(builtInCommands);
+            // Completer completer = new StringsCompleter(builtInCommands);
+            Completer completer = new ArgumentCompleter(
+                new StringsCompleter("cd", "echo", "exit", "pwd", "type", "help")
+            );
 
             reader = LineReaderBuilder.builder()
                     .terminal(terminal)
