@@ -88,6 +88,9 @@ class InputClass{
         );
 
         public static void initializeReader() throws IOException {
+            
+            Logger.getLogger("org.jline").setLevel(Level.SEVERE);
+
             Terminal terminal = TerminalBuilder.builder()
                     .system(true)
                     .build();
@@ -395,7 +398,7 @@ class ExecutableClass{
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        
+
         InputClass.initializeReader();
 
         outerLoop: while (true) {
