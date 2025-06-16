@@ -32,6 +32,30 @@ enum BuiltIn{
     echo, exit, cd, pwd, type
 }
 
+class CustomCompleter implements Completer {
+
+    private static final List<String> BUILTIN_COMMANDS = List.of("cd", "echo", "exit", "pwd", "type", "help");
+
+    @Override
+    public void complete(org.jline.reader.LineReader reader, ParsedLine line, List<Candidate> candidates) {
+        String word = line.word();
+
+        for (String cmd : BUILTIN_COMMANDS) {
+            if (cmd.startsWith(word)) {
+                candidates.add(new Candidate(
+                        cmd,   // value inserted
+                        cmd,   // display
+                        null,  // group
+                        null,  // description
+                        null,  // suffix
+                        " ",   // automatically append space
+                        true   // case-sensitive
+                ));
+            }
+        }
+    }
+}
+
 class InputClass{
 
     //     static {
@@ -92,19 +116,33 @@ class InputClass{
 
             Logger.getLogger("org.jline").setLevel(Level.SEVERE);
 
+            // Terminal terminal = TerminalBuilder.builder()
+            //         .system(true)
+            //         .build();
+
+            // // Completer completer = new StringsCompleter(builtInCommands);
+            // Completer completer = new ArgumentCompleter(
+            //     new StringsCompleter("cd", "echo", "exit", "pwd", "type", "help")
+            // );
+
+            // reader = LineReaderBuilder.builder()
+            //         .terminal(terminal)
+            //         .completer(completer)
+            //         .build();
+
             Terminal terminal = TerminalBuilder.builder()
                     .system(true)
                     .build();
 
-            // Completer completer = new StringsCompleter(builtInCommands);
-            Completer completer = new ArgumentCompleter(
-                new StringsCompleter("cd", "echo", "exit", "pwd", "type", "help")
-            );
+            Completer completer = new CustomCompleter();
 
-            reader = LineReaderBuilder.builder()
+            LineReader reader = LineReaderBuilder.builder()
                     .terminal(terminal)
                     .completer(completer)
                     .build();
+
+            // assign to InputClass.reader
+            InputClass.reader = reader;
         }
         
         public static void input(){
