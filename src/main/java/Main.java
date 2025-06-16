@@ -97,11 +97,24 @@ class InputClass{
                     .build();
 
             // Completer builtInCompleter = new EnumCompleter(BuiltIn.class); // Enum-based
-            Completer builtInCompleter = new StringsCompleter(
-                Arrays.stream(BuiltIn.values()).map(Enum::name).toArray(String[]::new)
-            );
+            // Completer builtInCompleter = new StringsCompleter(
+            //     Arrays.stream(BuiltIn.values()).map(Enum::name).toArray(String[]::new)
+            // );
 
-            Completer completer = new AggregateCompleter(builtInCompleter); // Combine more if needed
+            // Completer completer = new AggregateCompleter(builtInCompleter); // Combine more if needed
+
+            Completer completer = new Completer() {
+                @Override
+                public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
+                    String word = line.word().trim();
+                    if ("echo".startsWith(word)) {
+                        candidates.add(new Candidate("echo "));
+                    } else if ("exit".startsWith(word)) {
+                        candidates.add(new Candidate("exit "));
+                    }
+                }
+            };
+
 
             reader = LineReaderBuilder.builder()
                     .terminal(terminal)
