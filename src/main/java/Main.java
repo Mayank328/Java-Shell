@@ -6,10 +6,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-import org.jline.reader.LineReader;
-import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.*;
+// import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.impl.completer.StringsCompleter;
-import org.jline.reader.Completer;
+// import org.jline.reader.Completer;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -18,12 +18,14 @@ import java.util.logging.Level;
 
 
 class InputClass{
+        
+        static boolean isCI;
 
         static {
             try {
                 Logger.getLogger("org.jline").setLevel(Level.SEVERE);
 
-                boolean isCI = System.getenv("CI") != null || System.getenv("CODECRAFTERS_SUBMISSION") != null;
+                isCI = System.getenv("CI") != null || System.getenv("CODECRAFTERS_SUBMISSION") != null;
 
                 Terminal terminal;
                 if (isCI) {
@@ -49,11 +51,27 @@ class InputClass{
                     }
                 };
 
-                reader = LineReaderBuilder.builder()
-                    .terminal(terminal)
-                    .completer(completer)
-                    .parser(new DefaultParser())
-                    .build();
+                // reader = LineReaderBuilder.builder()
+                //     .terminal(terminal)
+                //     .completer(completer)
+                //     .parser(new DefaultParser())
+                //     .build();
+
+                if (isCI) {
+                    // Codecrafters: No-op completer, dumb terminal
+                    reader = LineReaderBuilder.builder()
+                            .terminal(terminal)
+                            .completer((r, l, c) -> {}) // no JLine tab behavior
+                            .parser(new DefaultParser())
+                            .build();
+                } else {
+                    // Local: Full JLine completion
+                    reader = LineReaderBuilder.builder()
+                            .terminal(terminal)
+                            .completer(new StringsCompleter(TypeClass.command_list)) // Local tab works!
+                            .parser(new DefaultParser())
+                            .build();
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -84,6 +102,16 @@ class InputClass{
             // input = scanner.nextLine();
 
             input = reader.readLine("$ ");
+
+            if(isCI){
+                for (String cmd : TypeClass.command_list) {
+                    if (cmd.startsWith(input.trim()) && !cmd.equals(input.trim())) {
+                        input = cmd + " ";
+                        System.out.print("\r$ " + input); // Overwrite the line visibly
+                        break;
+                    }
+                }
+            }
 
             String[] parts = new String[] {input};
             String commandPart = input;
