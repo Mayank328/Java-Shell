@@ -6,13 +6,22 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-import org.jline.reader.*;
+// import org.jline.reader.*;
 // import org.jline.reader.LineReaderBuilder;
-import org.jline.reader.impl.completer.StringsCompleter;
+// import org.jline.reader.impl.completer.StringsCompleter;
 // import org.jline.reader.Completer;
-import org.jline.reader.impl.completer.AggregateCompleter;
-import org.jline.reader.impl.completer.EnumCompleter;
-import org.jline.reader.impl.DefaultParser;
+// import org.jline.reader.impl.completer.AggregateCompleter;
+// import org.jline.reader.impl.completer.EnumCompleter;
+// import org.jline.reader.impl.DefaultParser;
+// import org.jline.terminal.Terminal;
+// import org.jline.terminal.TerminalBuilder;
+
+import org.jline.reader.Completer;
+import org.jline.reader.Candidate;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.ParsedLine;
+import org.jline.reader.impl.completer.StringsCompleter;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import java.util.logging.Logger;
@@ -23,110 +32,40 @@ enum BuiltIn{
 }
 
 class InputClass{
-        
-        // static boolean isCI;
 
-        // static {
-        //     try {
-        //         Logger.getLogger("org.jline").setLevel(Level.SEVERE);
+    //     static {
+    //     try {
+    //         //Suppress JLine log messages
+    //         Logger.getLogger("org.jline").setLevel(Level.SEVERE);
 
-        //         isCI = System.getenv("CI") != null || System.getenv("CODECRAFTERS_SUBMISSION") != null;
+    //         //Built-in commands
+    //         DefaultParser parser = new DefaultParser();
+    //         parser.setEscapeChars(new char[0]);
 
-        //         Terminal terminal;
-        //         if (isCI) {
-        //             terminal = TerminalBuilder.builder()
-        //                 .dumb(true)
-        //                 .system(false)
-        //                 .streams(System.in, System.out)
-        //                 .build();
-        //         } else {
-        //             terminal = TerminalBuilder.builder()
-        //                 .system(true)
-        //                 .build();
-        //         }
+    //         Terminal terminal = TerminalBuilder.builder()
+    //                 .system(true) // important: works in Codecrafters
+    //                 .build();
 
-        //         Completer completer = (reader, line, candidates) -> {
-        //             String buffer = line.line().trim();
-        //             for (String cmd : TypeClass.command_list) {
-        //                 if(cmd.startsWith(buffer)){
-        //                     reader.getBuffer().clear();
-        //                     reader.getBuffer().write(cmd + " ");
-        //                     break;
-        //                 }
-        //             }
-        //         };
+    //         // Completer builtInCompleter = new EnumCompleter(BuiltIn.class); // Enum-based
+    //         Completer builtInCompleter = new StringsCompleter(
+    //             Arrays.stream(BuiltIn.values()).map(Enum::name).toArray(String[]::new)
+    //         );
 
-        //         // reader = LineReaderBuilder.builder()
-        //         //     .terminal(terminal)
-        //         //     .completer(completer)
-        //         //     .parser(new DefaultParser())
-        //         //     .build();
+    //         Completer completer = new AggregateCompleter(builtInCompleter); // Combine more if needed
 
-        //         if (isCI) {
-        //             // Codecrafters: No-op completer, dumb terminal
-        //             reader = LineReaderBuilder.builder()
-        //                     .terminal(terminal)
-        //                     .completer((r, l, c) -> {}) // no JLine tab behavior
-        //                     .parser(new DefaultParser())
-        //                     .build();
-        //         } else {
-        //             // Local: Full JLine completion
-        //             reader = LineReaderBuilder.builder()
-        //                     .terminal(terminal)
-        //                     .completer(new StringsCompleter(TypeClass.command_list)) // Local tab works!
-        //                     .parser(new DefaultParser())
-        //                     .build();
-        //         }
+    //         reader = LineReaderBuilder.builder()
+    //                 .terminal(terminal)
+    //                 .parser(parser)
+    //                 .completer(completer)
+    //                 .build();
 
-        //     } catch (Exception e) {
-        //         e.printStackTrace();
-        //     }
-        // }
-
-        // static {
-        // try {
-            // Suppress JLine log messages
-            // Logger.getLogger("org.jline").setLevel(Level.SEVERE);
-
-            // Built-in commands
-            // DefaultParser parser = new DefaultParser();
-            // parser.setEscapeChars(new char[0]);
-
-            // Terminal terminal = TerminalBuilder.builder()
-            //         .system(true) // important: works in Codecrafters
-            //         .build();
-
-            // Completer builtInCompleter = new EnumCompleter(BuiltIn.class); // Enum-based
-            // Completer builtInCompleter = new StringsCompleter(
-            //     Arrays.stream(BuiltIn.values()).map(Enum::name).toArray(String[]::new)
-            // );
-
-            // Completer completer = new AggregateCompleter(builtInCompleter); // Combine more if needed
-
-        //     Completer completer = (reader, line, candidates) -> {
-        //         String word = line.word().trim();
-        //         if ("echo".startsWith(word)) {
-        //             candidates.add(new Candidate("echo", "echo", null, null, null, null, true));
-        //         }
-        //         if ("exit".startsWith(word)) {
-        //             candidates.add(new Candidate("exit", "exit", null, null, null, null, true));
-        //         }
-        //     };
-
-
-        //     reader = LineReaderBuilder.builder()
-        //             .terminal(terminal)
-        //             .parser(parser)
-        //             .completer(completer)
-        //             .build();
-
-        // } catch (Exception e) {
-        //     e.printStackTrace();
-        // }
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
     // }
 
         static String input;
-        // static LineReader reader;
+        static LineReader reader;
 
         static String command;
         static List<String> command_args_list;
@@ -142,24 +81,32 @@ class InputClass{
         static List<String> command_and_args;
         static String outputFile = null;
         static String errorFile = null;
+
+        // Add built-in commands here
+        private static final List<String> builtInCommands = Arrays.asList(
+                "cd", "echo", "exit", "pwd", "type", "help"
+        );
+
+        public static void initializeReader() throws IOException {
+            Terminal terminal = TerminalBuilder.builder()
+                    .system(true)
+                    .build();
+
+            Completer completer = new StringsCompleter(builtInCommands);
+
+            reader = LineReaderBuilder.builder()
+                    .terminal(terminal)
+                    .completer(completer)
+                    .build();
+        }
         
         public static void input(){
-            System.out.print("$ ");
+            // System.out.print("$ ");
             // Scanner scanner = new Scanner(System.in);
             // input = scanner.nextLine();
-            input = System.console().readLine();
 
-            // input = reader.readLine("$ ");
+            input = reader.readLine("$ ");
 
-            // if(isCI){
-            //     for (String cmd : TypeClass.command_list) {
-            //         if (cmd.startsWith(input.trim()) && !cmd.equals(input.trim())) {
-            //             input = cmd + " ";
-            //             System.out.print("\r$ " + input); // Overwrite the line visibly
-            //             break;
-            //         }
-            //     }
-            // }
 
             String[] parts = new String[] {input};
             String commandPart = input;
@@ -448,6 +395,8 @@ class ExecutableClass{
 public class Main {
 
     public static void main(String[] args) throws Exception {
+        
+        InputClass.initializeReader();
 
         outerLoop: while (true) {
             InputClass.input();
