@@ -83,18 +83,18 @@ class InputClass{
         //     }
         // }
 
-        static {
-        try {
+        // static {
+        // try {
             // Suppress JLine log messages
-            Logger.getLogger("org.jline").setLevel(Level.SEVERE);
+            // Logger.getLogger("org.jline").setLevel(Level.SEVERE);
 
             // Built-in commands
-            DefaultParser parser = new DefaultParser();
-            parser.setEscapeChars(new char[0]);
+            // DefaultParser parser = new DefaultParser();
+            // parser.setEscapeChars(new char[0]);
 
-            Terminal terminal = TerminalBuilder.builder()
-                    .system(true) // important: works in Codecrafters
-                    .build();
+            // Terminal terminal = TerminalBuilder.builder()
+            //         .system(true) // important: works in Codecrafters
+            //         .build();
 
             // Completer builtInCompleter = new EnumCompleter(BuiltIn.class); // Enum-based
             // Completer builtInCompleter = new StringsCompleter(
@@ -103,30 +103,30 @@ class InputClass{
 
             // Completer completer = new AggregateCompleter(builtInCompleter); // Combine more if needed
 
-            Completer completer = (reader, line, candidates) -> {
-                String word = line.word().trim();
-                if ("echo".startsWith(word)) {
-                    candidates.add(new Candidate("echo", "echo", null, null, null, null, true));
-                }
-                if ("exit".startsWith(word)) {
-                    candidates.add(new Candidate("exit", "exit", null, null, null, null, true));
-                }
-            };
+        //     Completer completer = (reader, line, candidates) -> {
+        //         String word = line.word().trim();
+        //         if ("echo".startsWith(word)) {
+        //             candidates.add(new Candidate("echo", "echo", null, null, null, null, true));
+        //         }
+        //         if ("exit".startsWith(word)) {
+        //             candidates.add(new Candidate("exit", "exit", null, null, null, null, true));
+        //         }
+        //     };
 
 
-            reader = LineReaderBuilder.builder()
-                    .terminal(terminal)
-                    .parser(parser)
-                    .completer(completer)
-                    .build();
+        //     reader = LineReaderBuilder.builder()
+        //             .terminal(terminal)
+        //             .parser(parser)
+        //             .completer(completer)
+        //             .build();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
+    // }
 
         static String input;
-        static LineReader reader;
+        // static LineReader reader;
 
         static String command;
         static List<String> command_args_list;
@@ -144,11 +144,12 @@ class InputClass{
         static String errorFile = null;
         
         public static void input(){
-            // System.out.print("$ ");
+            System.out.print("$ ");
             // Scanner scanner = new Scanner(System.in);
             // input = scanner.nextLine();
+            input = System.console().readLine();
 
-            input = reader.readLine("$ ");
+            // input = reader.readLine("$ ");
 
             // if(isCI){
             //     for (String cmd : TypeClass.command_list) {
@@ -450,6 +451,15 @@ public class Main {
 
         outerLoop: while (true) {
             InputClass.input();
+
+            if(InputClass.input.equals("ech")) {
+                System.out.println("$ echo ");
+                continue;
+            }
+            if(InputClass.input.equals("exi")){
+                System.out.println("$ exit ");
+                continue;
+            }
 
             if(InputClass.outputFile!= null || InputClass.errorFile!=null){
                 ExecutableClass.execute(InputClass.command_args,InputClass.command);
