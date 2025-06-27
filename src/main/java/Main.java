@@ -58,36 +58,36 @@ class CustomCompleter implements Completer {
 
 class InputClass{
 
-    //     static {
-    //     try {
-    //         //Suppress JLine log messages
-    //         Logger.getLogger("org.jline").setLevel(Level.SEVERE);
+        static {
+        try {
+            //Suppress JLine log messages
+            Logger.getLogger("org.jline").setLevel(Level.SEVERE);
 
-    //         //Built-in commands
-    //         DefaultParser parser = new DefaultParser();
-    //         parser.setEscapeChars(new char[0]);
+            //Built-in commands
+            DefaultParser parser = new DefaultParser();
+            parser.setEscapeChars(new char[0]);
 
-    //         Terminal terminal = TerminalBuilder.builder()
-    //                 .system(true) // important: works in Codecrafters
-    //                 .build();
+            Terminal terminal = TerminalBuilder.builder()
+                    .system(true) // important: works in Codecrafters
+                    .build();
 
-    //         // Completer builtInCompleter = new EnumCompleter(BuiltIn.class); // Enum-based
-    //         Completer builtInCompleter = new StringsCompleter(
-    //             Arrays.stream(BuiltIn.values()).map(Enum::name).toArray(String[]::new)
-    //         );
+            // Completer builtInCompleter = new EnumCompleter(BuiltIn.class); // Enum-based
+            Completer builtInCompleter = new StringsCompleter(
+                Arrays.stream(BuiltIn.values()).map(Enum::name).toArray(String[]::new)
+            );
 
-    //         Completer completer = new AggregateCompleter(builtInCompleter); // Combine more if needed
+            Completer completer = new AggregateCompleter(builtInCompleter); // Combine more if needed
 
-    //         reader = LineReaderBuilder.builder()
-    //                 .terminal(terminal)
-    //                 .parser(parser)
-    //                 .completer(completer)
-    //                 .build();
+            reader = LineReaderBuilder.builder()
+                    .terminal(terminal)
+                    .parser(parser)
+                    .completer(completer)
+                    .build();
 
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    // }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
         static String input;
         static LineReader reader;
@@ -108,13 +108,13 @@ class InputClass{
         static String errorFile = null;
 
         // Add built-in commands here
-        private static final List<String> builtInCommands = Arrays.asList(
-                "cd", "echo", "exit", "pwd", "type", "help"
-        );
+        // private static final List<String> builtInCommands = Arrays.asList(
+        //         "cd", "echo", "exit", "pwd", "type", "help"
+        // );
 
-        public static void initializeReader() throws IOException {
+        // public static void initializeReader() throws IOException {
 
-            Logger.getLogger("org.jline").setLevel(Level.SEVERE);
+        //     Logger.getLogger("org.jline").setLevel(Level.SEVERE);
 
             // Terminal terminal = TerminalBuilder.builder()
             //         .system(true)
@@ -130,20 +130,20 @@ class InputClass{
             //         .completer(completer)
             //         .build();
 
-            Terminal terminal = TerminalBuilder.builder()
-                    .system(true)
-                    .build();
+            // Terminal terminal = TerminalBuilder.builder()
+            //         .system(true)
+            //         .build();
 
-            Completer completer = new CustomCompleter();
+            // Completer completer = new CustomCompleter();
 
-            LineReader reader = LineReaderBuilder.builder()
-                    .terminal(terminal)
-                    .completer(completer)
-                    .build();
+            // LineReader reader = LineReaderBuilder.builder()
+            //         .terminal(terminal)
+            //         .completer(completer)
+            //         .build();
 
-            // assign to InputClass.reader
-            InputClass.reader = reader;
-        }
+            // // assign to InputClass.reader
+            // InputClass.reader = reader;
+        // }
         
         public static void input(){
             // System.out.print("$ ");
@@ -441,7 +441,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        InputClass.initializeReader();
+        // InputClass.initializeReader();
 
         outerLoop: while (true) {
             InputClass.input();
